@@ -1,0 +1,29 @@
+{
+  "name": "mastta-practice",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "mastra dev",
+    "build": "mastra build",
+    "typecheck": "bun check"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^26.6.5",
+    "mastra": "^1.35.0",
+    "typescript": "^7.0.2"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "4.0.82",
+    "@mastra/core": "^1.79.0",
+    "@mastra/libsql": "^1.27.0",
+    "@mastra/mcp": "2.5.0",
+    "@mastra/memory": "^1.39.0",
+    "@mastra/observability": "1.21.0",
+    "zod": "^4.6.7"
+  }
+}
