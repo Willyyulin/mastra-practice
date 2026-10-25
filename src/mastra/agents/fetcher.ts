@@ -9,6 +9,8 @@ import { fsMcp } from '../mcp/filesystem'
 import { gatewayTools } from '../mcp/gateway'
 import { capOutput } from '../tools/cap-output'
 import { now } from '../tools/now'
+import { zabbixProblems } from '../tools/zabbix-problems'
+
 export const fetcherAgent = new Agent({
   id: 'fetcher',
   name: '查資料員',
@@ -16,7 +18,7 @@ export const fetcherAgent = new Agent({
   instructions: `你只負責呼叫工具把資料查回來。回傳查到的數字與查詢條件，不要判讀，不要給建議。用台灣繁體中文。
                 查 Zabbix 的規則：
                 - output 一律 "extend"，這個工具不吃欄位清單，給了只會回 ID。筆數用 limit 控制：problem 一次最多 20，host 一次最多 8。
-                - 問某一類主機（WAF、DB…）的告警：先 hostgroup_get 用 search 找群組拿 groupids，再 problem_get 帶 groupids、severities、limit。不要先 host_get 再一台一台查。
+                - 問某一類主機（WAF、DB…）有沒有告警：只叫 zabbixProblems，給 keyword 就好，不要自己呼叫 hostgroup_get、host_get 或 problem_get。
                 - problem_get 預設只回還沒恢復的（r_eventid 是 "0"），name 裡通常已有主機名與 IP，不用再查 trigger。severity 4 是 High、5 是 Disaster。
                 - 「最近 N 分鐘」先叫 now 拿 unix 秒數，time_from = unix - N*60。
                 - 工具回傳 truncated: true 表示結果太大，縮小 limit 或加 severities 再查一次。
@@ -26,7 +28,7 @@ export const fetcherAgent = new Agent({
                 - 超過 20 筆只回最嚴重的 20 筆，第一行寫總筆數。
                 - 不要寫前言、結語、分析。`,
   model: sonnet(),
-  tools: capOutput(readOnly({ now, getHostMetrics, listLargeFiles, rebootHost, ...(await fsMcp.listTools()), ...(await gatewayTools()) })),
+  tools: capOutput(readOnly({ now, zabbixProblems, getHostMetrics, listLargeFiles, rebootHost, ...(await fsMcp.listTools()), ...(await gatewayTools()) })),
   memory: noMemory,
   defaultOptions: { ...promptCache, maxSteps: 8 }
 })
